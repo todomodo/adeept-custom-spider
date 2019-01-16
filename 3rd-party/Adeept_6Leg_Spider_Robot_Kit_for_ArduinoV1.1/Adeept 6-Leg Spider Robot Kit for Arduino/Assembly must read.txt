@@ -1,0 +1,4 @@
+Note: The robot will only move after it stands up. 
+Press the button A(On the remote control) and the robot will stand/squat. After it stands up, the RGB LED will turn into blue (or green); when it squats, this LED will change to red. 
+
+http://www.adeept.com/blog/spider-robot-encountered-a-problem-summary_b0049.html
