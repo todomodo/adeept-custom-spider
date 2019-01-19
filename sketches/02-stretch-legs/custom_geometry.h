@@ -1,5 +1,5 @@
 /*
-  I've wired my servoes differently from what the manual says to better organize cables
+  I've wired my servos differently from what the manual says to better organize cables
   This file defines which PWM controller and channel each servo uses.
  */
 #define PWM_SERVO_FREQUENCY 50 //TowerPro MG90S Servos run at 50 HZ
@@ -40,7 +40,7 @@ Adeept_PWMPCA9685 pwm1 = Adeept_PWMPCA9685(0x41);
 // convert from degrees to PWM pulses
 int pulseLength (int degrees){
   if(degrees>=180){degrees=180;}
-  if(degrees<=0){degrees=1;}  // for some reason my controler acts out when 0 is used
+  if(degrees<=0){degrees=1;}  // 0 turns off power, so don't use it
   return map(degrees,0,180,PWM_SERVO_PULSEMIN,PWM_SERVO_PULSEMAX);
 }
 
