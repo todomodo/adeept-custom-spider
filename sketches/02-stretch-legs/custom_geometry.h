@@ -3,62 +3,66 @@
   This file defines which PWM controller and channel each servo uses.
  */
 #define PWM_SERVO_FREQUENCY 50 //TowerPro MG90S Servos run at 50 HZ
+#define PWM_SERVO_PULSEMIN 130
+#define PWM_SERVO_PULSEMAX 600
 
-// robot leg "A"
-#define LEGA_CONTROLLER 1
-#define LEGA_SERVO1_CHANNEL 10  
-#define LEGA_SERVO2_CHANNEL  9  
-#define LEGA_SERVO3_CHANNEL  8
-
-// robot leg "B"
-#define LEGB_CONTROLLER 1
-#define LEGB_SERVO1_CHANNEL  6  
-#define LEGB_SERVO2_CHANNEL  5  
-#define LEGB_SERVO3_CHANNEL  4
-
-// robot leg "C"
-#define LEGC_CONTROLLER 1
-#define LEGC_SERVO1_CHANNEL 2  
-#define LEGC_SERVO2_CHANNEL 1  
-#define LEGC_SERVO3_CHANNEL 0
-
-// robot leg "D"
-#define LEGD_CONTROLLER 0
-#define LEGD_SERVO1_CHANNEL 0  
-#define LEGD_SERVO2_CHANNEL 1  
-#define LEGD_SERVO3_CHANNEL 2
-
-// robot leg "E"
-#define LEGE_CONTROLLER 0
-#define LEGE_SERVO1_CHANNEL 4  
-#define LEGE_SERVO2_CHANNEL 5  
-#define LEGE_SERVO3_CHANNEL 6
-
-// robot leg "F"
-#define LEGF_CONTROLLER 0
-#define LEGF_SERVO1_CHANNEL 8  
-#define LEGF_SERVO2_CHANNEL 9  
-#define LEGF_SERVO3_CHANNEL 10
-
-// total nuber of legs
-#define NUM_LEGS 6
-
-// describes a servo in given state 
+// describes a servo configuration 
 typedef struct {
-  uint8_t pwmIndex;
-  uint8_t channelIndex;
-  uint16_t angle;
-} servo_descriptor_t;
+  uint8_t channel;
+} servo_configuration_t;
 
-// describes a leg of 3 servoes in given state
+// describes a leg of 3 servoes 
 typedef struct {
-  char label;
-  servo_descriptor_t servo1;
-  servo_descriptor_t servo2;
-  servo_descriptor_t servo3;
-} leg_descriptor_t;
+  servo_configuration_t servo1;
+  servo_configuration_t servo2;
+  servo_configuration_t servo3;
+} leg_configuration_t;
 
-// describes the state of the entire robot
+// describes the position of the leg 
 typedef struct {
-  leg_descriptor_t legs[NUM_LEGS];
-} robot_descriptor_t; 
+  int servo1_angle;
+  int servo2_angle;
+  int servo3_angle;
+} leg_state_t;
+
+// define the legs in terms of servo numbers. Servo numbers are 0 .. 31
+leg_configuration_t LC_A = { {31}, {30}, {29} };
+leg_configuration_t LC_B = { {27}, {26}, {25} };
+leg_configuration_t LC_C = { {23}, {22}, {21} };
+leg_configuration_t LC_D = { {13}, {14}, {15} };
+leg_configuration_t LC_E = { { 9}, {10}, {11} };
+leg_configuration_t LC_F = { { 5}, { 6}, { 7} };
+
+// global variables for talking with the PWM controller
+Adeept_PWMPCA9685 pwm0 = Adeept_PWMPCA9685(0x40); 
+Adeept_PWMPCA9685 pwm1 = Adeept_PWMPCA9685(0x41); 
+
+// convert from degrees to PWM pulses
+int pulseLength (int degrees){
+  if(degrees>=180){degrees=180;}
+  if(degrees<=0){degrees=1;}  // for some reason my controler acts out when 0 is used
+  return map(degrees,0,180,PWM_SERVO_PULSEMIN,PWM_SERVO_PULSEMAX);
+}
+
+// set one servo
+void setServo(servo_configuration_t servo, int angle){
+  if (servo.channel<16) {
+    pwm0.setPWM(servo.channel, 0, pulseLength(angle));
+  } else {
+    pwm1.setPWM(servo.channel-16, 0, pulseLength(angle));
+  }
+}
+
+// set one leg
+void setLeg(leg_configuration_t config, leg_state_t state) {
+  setServo(config.servo1, state.servo1_angle);
+  setServo(config.servo2, state.servo2_angle);
+  setServo(config.servo3, state.servo3_angle);
+}
+
+void setupPWM(void) {
+  pwm0.begin();
+  pwm0.setPWMFreq(PWM_SERVO_FREQUENCY);
+  pwm1.begin();
+  pwm1.setPWMFreq(PWM_SERVO_FREQUENCY);   
+}
