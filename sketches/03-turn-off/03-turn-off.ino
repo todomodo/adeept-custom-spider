@@ -1,5 +1,5 @@
 /*
- * Power down all servoes
+ * Power down all channels
  */
 #include <Adeept_PWMPCA9685.h>
 
