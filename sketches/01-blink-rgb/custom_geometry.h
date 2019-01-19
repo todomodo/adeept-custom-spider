@@ -2,11 +2,11 @@
   I've wired my servos differently from what the manual says to better organize cables
   This file defines which PWM controller and channel each servo uses.
  */
-#define PWM_SERVO_FREQUENCY 50            //TowerPro MG90S Servos run at 50 HZ
-#define PWM_LED_COLOR_OFF 4095            // magic value turns off a color 
-#define PWM_LED_COLOR_ON     0            // magic value turns on a color 
-#define PWM_PIN_OFF           0           // magic value turns off a pin 
-#define PWM_CHANNELS_PER_CONTROLLER   16  // we use 16 channel controllers
+#define PWM_SERVO_FREQUENCY 			    50  //TowerPro MG90S Servos run at 50 HZ
+#define PWM_LED_COLOR_OFF			      4095  // magic value turns off a color 
+#define PWM_LED_COLOR_ON				       0  // magic value turns on a color 
+#define PWM_PIN_OFF						         0  // magic value turns off a pin 
+#define PWM_CHANNELS_PER_CONTROLLER		16  // we use 16 channel controllers
 
 // describes a LED configuration 
 typedef struct {
