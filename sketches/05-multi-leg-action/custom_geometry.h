@@ -66,6 +66,18 @@ void setServo(servo_configuration_t servo, int angle){
     setPWMPulse(servo.channel, getPulseLength(angle));
 }
 
+// turn one servo off
+void turnOffServo(servo_configuration_t config) {
+  setPWMPulse(config.channel, PWM_PIN_OFF);
+}
+
+// turn multiple servos off
+void turnOffServos(servo_configuration_t configs[], int size) {
+  for (int i=0; i<size; i++) {
+    turnOffServo(configs[i]);
+  }
+}
+
 // set one leg
 void setLeg(leg_configuration_t config, leg_state_t state) {
   setServo(config.servo1, state.angle1);
@@ -77,6 +89,20 @@ void setLeg(leg_configuration_t config, leg_state_t state) {
 void setLegs(leg_configuration_t configs[], int size, leg_state_t states[]) {
   for (int i=0; i<size; i++) {
     setLeg(configs[i], states[i]);
+  }
+}
+
+// turn one leg off
+void turnOffLeg(leg_configuration_t config) {
+  turnOffServo(config.servo1);
+  turnOffServo(config.servo2);
+  turnOffServo(config.servo3);
+}
+
+// turn multiple legs off
+void turnOffLegs(leg_configuration_t configs[], int size) {
+  for (int i=0; i<size; i++) {
+    turnOffLeg(configs[i]);
   }
 }
 
