@@ -1,8 +1,10 @@
 /*
- * A simple leg motion pattern
+ * A simple one leg motion pattern
  */
 #include <Adeept_PWMPCA9685.h>
-#include "custom_geometry.h"
+#include "custom_pwmio.h"
+#include "custom_servos.h"
+#include "custom_legs.h"
 
 leg_state_t a1 = {45, 10, 10 };
 leg_state_t a2 = {45, 50, 100 };

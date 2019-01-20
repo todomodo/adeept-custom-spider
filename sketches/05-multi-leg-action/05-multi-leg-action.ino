@@ -2,13 +2,12 @@
  * stand up on all 6 legs
  */
 #include <Adeept_PWMPCA9685.h>
-#include "custom_geometry.h"
+#include "custom_pwmio.h"
+#include "custom_servos.h"
+#include "custom_legs.h"
 
-#define NUM_LEGS 6
 
-leg_configuration_t g_Legs[NUM_LEGS] = { LEG_A, LEG_B, LEG_C, LEG_D, LEG_E, LEG_F};
-
-leg_state_t g_Lotus[NUM_LEGS] = {
+leg_state_t g_Lotus[LEGS_PER_ROBOT] = {
   {45, 50, 110 }, {50, 50, 110 }, {50, 50, 110 },
   {55, 50, 10 }, {50, 50, 10 }, {50, 50, 10 }
 };
@@ -16,7 +15,7 @@ leg_state_t g_Lotus[NUM_LEGS] = {
 // executed once at startup
 void setup() {
   setupPWM();
-  setLegs(g_Legs, NUM_LEGS, g_Lotus);
+  setLegs(ALL_LEGS, LEGS_PER_ROBOT, g_Lotus);
 }
 
 // called continuously at runtime

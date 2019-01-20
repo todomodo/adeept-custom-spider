@@ -3,13 +3,15 @@
  */
 
 #include <Adeept_PWMPCA9685.h>
-#include "custom_geometry.h"
+#include "custom_pwmio.h"
+#include "custom_lights.h"
 
 led_state_t g_Color;
 char g_ColorName;
 
+
 void setup() {  
-  setupPWM();
+  setupPWM2();
   setNextColor('R');
 }
 

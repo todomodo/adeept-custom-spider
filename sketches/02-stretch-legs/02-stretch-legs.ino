@@ -1,5 +1,7 @@
 #include <Adeept_PWMPCA9685.h>
-#include "custom_geometry.h"
+#include "custom_pwmio.h"
+#include "custom_servos.h"
+#include "custom_legs.h"
 
 // executed once at startup
 void setup() {
