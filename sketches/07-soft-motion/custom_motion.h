@@ -96,16 +96,17 @@ void moveTo(motion_type_t motion_type, leg_state_t finish_angles[],int size) {
 }
 
 /*
- * execute current motion. needs to be called from the main loop
+ * execute current motion. needs to be called from the main loop.
+ * returns true if motion is still in progress
  */
 bool doMotion(void) {
-    bool has_moved = false;
+    bool in_progress = false;
     for(int i=0; i<MOTION_GROUP.size; i++) {
       if  ( (MOTION_GROUP.current_angles[i] != MOTION_GROUP.final_angles[i]) &&
             (MOTION_GROUP.angle_increments[i] !=0) ) {
                 
         // apply the increment        
-        has_moved = true;
+        in_progress = true;
         MOTION_GROUP.current_angles[i] += MOTION_GROUP.angle_increments[i];
         
         //correct overshoots to ensure we end up EXACTLY in the final position
@@ -117,10 +118,10 @@ bool doMotion(void) {
       } 
     }
 
-    if (has_moved) {
+    if (in_progress) {
       setServos(MOTION_GROUP.servos, MOTION_GROUP.size,  MOTION_GROUP.current_angles);  
       delay(MOTION_GROUP.motion_type.motion_delay);
     }
        
-    return has_moved;
+    return in_progress;
 }
