@@ -11,17 +11,17 @@ servo_configuration_t g_FirstServos[LEGS_PER_ROBOT] = {
   LEG_A.servo1, LEG_B.servo1, LEG_C.servo1, LEG_D.servo1, LEG_E.servo1, LEG_F.servo1
 };
 
-leg_state_t g_Stage1[LEGS_PER_ROBOT] = {
+leg_state_t g_Stage0[LEGS_PER_ROBOT] = {
   {45, 10, 10 }, {50, 12, 10 }, {50, 10, 10 },
   {55, 95, 110 }, {50, 90, 110 }, {50, 90, 110 }
 };
 
-leg_state_t g_Stage2[LEGS_PER_ROBOT] = {
+leg_state_t g_Stage1[LEGS_PER_ROBOT] = {
   {45, 70, 10 }, {50, 70, 10 }, {50, 70, 10 },
   {55, 30, 110 }, {50, 30, 110 }, {50, 30, 110 }
 };
 
-leg_state_t g_Stage3[LEGS_PER_ROBOT] = {
+leg_state_t g_Stage2[LEGS_PER_ROBOT] = {
   {45, 70, 40 }, {50, 70, 40 }, {50, 70, 40 },
   {55, 30, 70 }, {50, 30, 75 }, {50, 30, 75 }
 };
@@ -30,17 +30,13 @@ leg_state_t g_Stage3[LEGS_PER_ROBOT] = {
 // executed once at startup
 void setup() {
   setupPWM();
-
-  // turn off all legs, if the spider is standing, this could bring it down softly
-  turnOffLegs(ALL_LEGS, LEGS_PER_ROBOT);
-  delay(2000);  
-
+ 
   // get up in 3 phases
-  setLegs(ALL_LEGS, LEGS_PER_ROBOT, g_Stage1);
+  setLegs(ALL_LEGS, LEGS_PER_ROBOT, g_Stage0);
   delay(2000);  
-  setLegs(ALL_LEGS, LEGS_PER_ROBOT, g_Stage2);
+  setLegs(ALL_LEGS, LEGS_PER_ROBOT, g_Stage1);
   delay(1000);
-  setLegs(ALL_LEGS, LEGS_PER_ROBOT, g_Stage3);
+  setLegs(ALL_LEGS, LEGS_PER_ROBOT, g_Stage2);
   delay(1000);
 
   //turn off non-essential servos to save power
