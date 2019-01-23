@@ -28,7 +28,7 @@
 
 
 /*
- *  Prescaler 1024 + MatchRegister 255 = InterruptFrequency 61Hz
+ *  Prescaler 1024 + CMR 255 = InterruptFrequency 61Hz
  */
 #define TIMER2_COMPA_FREQUENCY 61
 
@@ -58,8 +58,8 @@ void setupTimers(void) {
     TCCR2B |= (1 << CS22) | (1 << CS21) | (1 << CS20);
 
     /* 
-     *  Set the compare match register to its max value. Interrupts will be generated every time this
-     * value is reached. Prescaler 1024 + MatchRegister 255 = InterruptFrequency 61Hz
+     *  Set CMR to its max possible value because we want slow timers. Interrupts will be generated
+     *  every time this value is reached. Prescaler 1024 + CMR 255 = InterruptFrequency 61Hz
      */
     OCR2A = 0xFF;      
 
