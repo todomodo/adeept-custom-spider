@@ -35,29 +35,29 @@ leg_configuration_t ALL_LEGS[LEGS_PER_ROBOT] = {
 };
 
 // set one leg
-void setLeg(leg_configuration_t config, leg_state_t state) {
-  setServo(config.servo1, state.angle1);
-  setServo(config.servo2, state.angle2);
-  setServo(config.servo3, state.angle3);
+void legSet(leg_configuration_t config, leg_state_t state) {
+  servoSet(config.servo1, state.angle1);
+  servoSet(config.servo2, state.angle2);
+  servoSet(config.servo3, state.angle3);
 }
 
 // set multiple legs
-void setLegs(leg_configuration_t configs[], int size, leg_state_t states[]) {
+void legSet(leg_configuration_t configs[], int size, leg_state_t states[]) {
   for (int i=0; i<size; i++) {
-    setLeg(configs[i], states[i]);
+    legSet(configs[i], states[i]);
   }
 }
 
 // turn one leg off
-void turnOffLeg(leg_configuration_t config) {
-  turnOffServo(config.servo1);
-  turnOffServo(config.servo2);
-  turnOffServo(config.servo3);
+void legTurnOff(leg_configuration_t config) {
+  servoTurnOff(config.servo1);
+  servoTurnOff(config.servo2);
+  servoTurnOff(config.servo3);
 }
 
 // turn multiple legs off
-void turnOffLegs(leg_configuration_t configs[], int size) {
+void legTurnOff(leg_configuration_t configs[], int size) {
   for (int i=0; i<size; i++) {
-    turnOffLeg(configs[i]);
+    legTurnOff(configs[i]);
   }
 }

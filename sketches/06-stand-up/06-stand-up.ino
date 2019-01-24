@@ -29,18 +29,18 @@ leg_state_t g_Stage2[LEGS_PER_ROBOT] = {
 
 // executed once at startup
 void setup() {
-  setupPWM();
+  pwmSetup();
  
   // get up in 3 phases
-  setLegs(ALL_LEGS, LEGS_PER_ROBOT, g_Stage0);
+  legSet(ALL_LEGS, LEGS_PER_ROBOT, g_Stage0);
   delay(2000);  
-  setLegs(ALL_LEGS, LEGS_PER_ROBOT, g_Stage1);
+  legSet(ALL_LEGS, LEGS_PER_ROBOT, g_Stage1);
   delay(1000);
-  setLegs(ALL_LEGS, LEGS_PER_ROBOT, g_Stage2);
+  legSet(ALL_LEGS, LEGS_PER_ROBOT, g_Stage2);
   delay(1000);
 
   //turn off non-essential servos to save power
-  turnOffServos(g_FirstServos, LEGS_PER_ROBOT);
+  servoTurnOff(g_FirstServos, LEGS_PER_ROBOT);
 }
 
 // called continuously at runtime

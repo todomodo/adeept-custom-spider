@@ -1,5 +1,5 @@
 /*
-  Blink led using timer interrupts
+  Blink RGB led using timer interrupts
  */
 
 #include <Adeept_PWMPCA9685.h>
@@ -15,8 +15,7 @@ led_state_t g_Colors[NUM_COLORS] = {LED_COLOR_RED, LED_COLOR_GREEN, LED_COLOR_BL
 int g_CurrentColorIndex=0;
 
 /* 
- * Tracks the number of handled interrupts, will increment with the speed of 
- * TIMER2_COMPA_FREQUENCY, which is usually hundreds per second
+ * Tracks the number of handled interrupts. 
  */
 uint16_t g_InterruptCount=0;
 
@@ -38,7 +37,7 @@ void loop() {
 }
 
 /*
- * called with the speed of TIMER2_COMPA_FREQUENCY
+ * called TIMER2_COMPA_FREQUENCY times per second
  */
 ISR (TIMER2_COMPA_vect)
 {
@@ -56,8 +55,8 @@ ISR (TIMER2_COMPA_vect)
      /*
       * ATMEL 328/168 has a single level interrupts which means interrupts are disabled inside interrupt
       * handlers. Since I2C uses interrupts, any attempts to communicate with I2C devices (such as the PWM
-      * controller) from inside the interrupt handler will likely fail. The technique we use here is to 
-      * re-enable interrupts explicitly. This works but is considered risky
+      * controller's RGB light) from inside the interrupt handler will likely fail. The technique we use
+      * here is to re-enable interrupts explicitly. This works but is considered risky
       */
      sei();
      

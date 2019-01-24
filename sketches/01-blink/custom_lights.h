@@ -23,6 +23,7 @@ typedef struct {
  * define the led in terms of channel numbers. Channel numbers are 0 .. 31 
  * for dual controller setup 
  */
+
 led_configuration_t LED_A = { 2, 3, 4 };
 
 // define some primary colors
@@ -31,8 +32,8 @@ led_state_t LED_COLOR_GREEN = { PWM_LED_COLOR_OFF, PWM_LED_COLOR_ON,  PWM_LED_CO
 led_state_t LED_COLOR_BLUE =  { PWM_LED_COLOR_OFF, PWM_LED_COLOR_OFF, PWM_LED_COLOR_ON };
 
 // set the LED
-void setLed(led_configuration_t config, led_state_t state) {
-  setPWMPulse(config.rChannel, state.rPulse);
-  setPWMPulse(config.gChannel, state.gPulse);
-  setPWMPulse(config.bChannel, state.bPulse);
+void ledSet(led_configuration_t config, led_state_t state) {
+  pwmSetPulse(config.rChannel, state.rPulse);
+  pwmSetPulse(config.gChannel, state.gPulse);
+  pwmSetPulse(config.bChannel, state.bPulse);
 }

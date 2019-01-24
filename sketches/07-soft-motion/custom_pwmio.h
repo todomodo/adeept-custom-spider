@@ -17,7 +17,7 @@ Adeept_PWMPCA9685 pwm0 = Adeept_PWMPCA9685(0x40);
 Adeept_PWMPCA9685 pwm1 = Adeept_PWMPCA9685(0x41); 
 
 // setup the PWM controllers
-void setupPWM(void) {
+void pwmSetup(void) {
   pwm0.begin();
   pwm0.setPWMFreq(PWM_SERVO_FREQUENCY);
   pwm1.begin();
@@ -28,7 +28,7 @@ void setupPWM(void) {
  * set PWM pulse on a channel chosing first or second controller based on the
  * channel number
  */
-void setPWMPulse(int channel, int pulse_length){
+void pwmSetPulse(int channel, int pulse_length){
   if (channel<PWM_CHANNELS_PER_CONTROLLER) {
     // use first controller
     pwm0.setPWM(channel, PWM_PIN_OFF, pulse_length);  

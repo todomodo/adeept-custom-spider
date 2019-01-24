@@ -12,11 +12,11 @@ int g_CurrentColorIndex=0;
 
 
 void setup() {  
-  setupPWM2();
+  pwmSetup();
 }
 
 void loop() {  
   if (++g_CurrentColorIndex>=NUM_COLORS) g_CurrentColorIndex=0;
-  setLed(LED_A,g_Colors[g_CurrentColorIndex]);
+  ledSet(LED_A,g_Colors[g_CurrentColorIndex]);
    delay(1500);
 }

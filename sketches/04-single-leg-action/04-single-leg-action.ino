@@ -16,7 +16,7 @@ int g_CurrentState = 0;
 
 // executed once at startup
 void setup() {
-  setupPWM();  
+  pwmSetup();  
 }
 
 // called continously at runtime
@@ -24,6 +24,6 @@ void loop() {
   if (++g_CurrentState>=NUM_STATES) { 
     g_CurrentState = 0;    
   }
-  setLeg(LEG_A, states[g_CurrentState]);
+  legSet(LEG_A, states[g_CurrentState]);
   delay(2000);
 }

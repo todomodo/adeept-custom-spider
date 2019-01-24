@@ -33,12 +33,12 @@ int g_CurrentMotionStageIndex = -1;
 
 // executed once at startup
 void setup() {
-  setupPWM();
+  pwmSetup();
 }
 
 // called continuously at runtime
 void loop() {           
   if (++g_CurrentMotionStageIndex>=MAX_MOTION_STAGES) g_CurrentMotionStageIndex = 0;    
-  setLegs(ALL_LEGS, LEGS_PER_ROBOT, g_MotionStages[g_CurrentMotionStageIndex].legs); 
+  legSet(ALL_LEGS, LEGS_PER_ROBOT, g_MotionStages[g_CurrentMotionStageIndex].legs); 
   delay(2000);     
 }
