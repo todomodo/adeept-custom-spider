@@ -23,7 +23,7 @@ uint16_t g_InterruptCount=0;
  * called once at startup
  */
 void setup() {  
-  setupPWM();
+  pwmSetup();
   setupTimers();  
 }
 
@@ -63,6 +63,6 @@ ISR (TIMER2_COMPA_vect)
      /*
       * change the LED color
       */
-     setLed(LED_A,g_Colors[g_CurrentColorIndex]);
+     ledSet(LED_A,g_Colors[g_CurrentColorIndex]);
   }
 }

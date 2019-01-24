@@ -1,6 +1,6 @@
 /*
- * Low level I/O functions and definitions to deal with PWM controllers
- * most of these are required whne controlling servos, legs and RGB lights
+ * Low level I/O functions and definitions to deal with dual PCA9685 PWM controller
+ * most of these are for controlling servos and RGB lights
  */
 
 #define PWM_SERVO_FREQUENCY          50  //TowerPro MG90S Servos run at 50 HZ

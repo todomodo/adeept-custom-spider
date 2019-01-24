@@ -1,5 +1,6 @@
 /*
- * soft motion between several states
+ * Arduino controlled slow motion. Slowness is achieved by programmatic delays 
+ * in the code from the man loop
  */
 #include <Adeept_PWMPCA9685.h>
 #include "custom_pwmio.h"

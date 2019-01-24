@@ -64,7 +64,7 @@ void setupTimers(void) {
     OCR2A = 0xFF;      
 
     /* 
-     *  Enable interrupt on compare match. You will need to define a "ISR (TIMER2_COMPA_vect)" function
+     * Enable interrupt on compare match. You will need to define a "ISR (TIMER2_COMPA_vect)" function
      * somewhere in your code to handle the interrupt. Note that ATMEL 328/168 has a single level interrupts
      * which means interrupts are disabled inside interrupt handlers. Since I2C uses interrupts, any attempts 
      * to communicate with I2C devices from within the interrupt handler will likely fail. One possible
