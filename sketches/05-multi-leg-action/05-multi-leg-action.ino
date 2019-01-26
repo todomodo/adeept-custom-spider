@@ -1,44 +1,42 @@
 /*
  * move all 6 legs in a simple way by drectly setting the servos
  */
-#include <Adeept_PWMPCA9685.h>
-#include "custom_pwmio.h"
-#include "custom_servos.h"
-#include "custom_legs.h"
+#include "tdm_pwmio.h"
+#include "tdm_servos.h"
+#include "tdm_legs.h"
 
 /*
- * define motion stage to be A collection of leg states
+ * define PWM
  */
-typedef struct {
-  leg_state_t legs[LEGS_PER_ROBOT];
-} motions_stage_t;
-
-motions_stage_t g_Stage0 = {{
-  {45, 50, 110 }, {50, 50, 110 }, {50, 50, 110 },
-  {55, 50, 10 }, {50, 50, 10 }, {50, 50, 10 }
-}};
-
-motions_stage_t g_Stage1 = {{
-  {30, 70, 80 }, {30, 70, 80 }, {30, 70, 80 },
-  {70, 30, 30 }, {70, 30, 30 }, {70, 30, 30 }
-}};
+tdm::PwmIO _pwm;
+tdm::LegGroup *_legs;
 
 /*
- *  one global array of motion stages
+ * set leg states to cirle between
  */
-#define MAX_MOTION_STAGES 2
-motions_stage_t g_MotionStages[MAX_MOTION_STAGES] = { g_Stage0, g_Stage1 };
-int g_CurrentMotionStageIndex = -1;
+#define NUM_STATES 2
+const int _states[NUM_STATES][TDM_LEGS_PER_ROBOT][TDM_SERVOS_PER_LEG] = {
+  { {45, 50, 110 }, {50, 50, 110 }, {50, 50, 110 }, {55, 50, 10 }, {50, 50, 10 }, {50, 50, 10 } },  // robot state 0
+  { {30, 70, 80 }, {30, 70, 80 }, {30, 70, 80 }, {70, 30, 30 }, {70, 30, 30 }, {70, 30, 30 } }      // robot state 1
+};
+int _index = -1;
 
 
-// executed once at startup
+/* 
+ * executed once at startup 
+ */
 void setup() {
-  pwmSetup();
+  _pwm.setup(); 
+  _legs = new tdm::LegGroup(TDM_LEGS_PER_ROBOT, 
+    tdm::Leg::build('A'),tdm::Leg::build('B'),tdm::Leg::build('C'),
+    tdm::Leg::build('D'),tdm::Leg::build('E'),tdm::Leg::build('F'));
 }
 
-// called continuously at runtime
+/* 
+ * called continuously at runtime 
+ */
 void loop() {           
-  if (++g_CurrentMotionStageIndex>=MAX_MOTION_STAGES) g_CurrentMotionStageIndex = 0;    
-  legSet(ALL_LEGS, LEGS_PER_ROBOT, g_MotionStages[g_CurrentMotionStageIndex].legs); 
+  if (++_index>=NUM_STATES) _index = 0;    
+  _legs->setAngles(_states[_index]); 
   delay(2000);     
 }

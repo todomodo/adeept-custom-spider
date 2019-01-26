@@ -1,28 +1,38 @@
-#include <Adeept_PWMPCA9685.h>
-#include "custom_pwmio.h"
-#include "custom_servos.h"
-#include "custom_legs.h"
+/*
+ * stretch all legs
+ */
+#include "tdm_pwmio.h"
+#include "tdm_servos.h"
+#include "tdm_legs.h"
 
-// executed once at startup
+/*
+ * declare PWM
+ */
+tdm::PwmIO _pwm;
+
+/* 
+ * executed once at startup 
+ */
 void setup() {
-  pwmSetup();      
+  _pwm.setup();  
   
-  leg_state_t stretch_a = {45, 50, 100 };
-  legSet(LEG_A, stretch_a);
-  leg_state_t stretch_b = {50, 50, 95 };
-  legSet(LEG_B, stretch_b);
-  leg_state_t stretch_c = {52, 50, 95 };
-  legSet(LEG_C, stretch_c);
-  leg_state_t stretch_d = {52, 50, 20 };
-  legSet(LEG_D, stretch_d);
-  leg_state_t stretch_e = {35, 50, 25 };
-  legSet(LEG_E, stretch_e);
-  leg_state_t stretch_f = {50, 50, 25 };
-  legSet(LEG_F, stretch_f);
+  int stretch_a[] = {45, 50, 100 };
+  tdm::Leg::build('A')->setAngles(stretch_a);  
+  int stretch_b[] = {50, 50, 95 };
+  tdm::Leg::build('B')->setAngles(stretch_b);
+  int stretch_c[] = {52, 50, 95 };
+  tdm::Leg::build('C')->setAngles(stretch_c);
+  int stretch_d[] = {52, 50, 20 };
+  tdm::Leg::build('D')->setAngles(stretch_d);
+  int stretch_e[] = {35, 50, 25 };
+  tdm::Leg::build('E')->setAngles(stretch_e);
+  int stretch_f[] = {50, 50, 25 };
+  tdm::Leg::build('F')->setAngles(stretch_f);
 }
 
-// called continously at runtime
+/* 
+ * called continously at runtime 
+ */
 void loop() {         
-  delay(200);
-  
+    
 }

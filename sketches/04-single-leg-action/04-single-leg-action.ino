@@ -1,29 +1,43 @@
 /*
  * A simple one leg motion pattern
  */
-#include <Adeept_PWMPCA9685.h>
-#include "custom_pwmio.h"
-#include "custom_servos.h"
-#include "custom_legs.h"
+#include "tdm_pwmio.h"
+#include "tdm_servos.h"
+#include "tdm_legs.h"
 
-leg_state_t a1 = {45, 10, 10 };
-leg_state_t a2 = {45, 50, 100 };
-leg_state_t a3 = {45, 10, 100 };
+/*
+ * define PWM
+ */
+tdm::PwmIO _pwm;
+tdm::Leg *_leg;
 
-#define NUM_STATES 3
-leg_state_t states[NUM_STATES] = {a1, a2, a3};
-int g_CurrentState = 0;
+/*
+ * set leg states to cirle between
+ */
+#define NUM_STATES 4
+const int _states[NUM_STATES][TDM_SERVOS_PER_LEG] = {
+  {45, 50, 100 }, //stretch
+  {45, 50, 10 },  //fold
+  {45, 10, 10 },  //up
+  {45, 50, 10 }   //down  
+};
+int _index = 0;
 
-// executed once at startup
+/*
+ * executed once at startup
+ */
 void setup() {
-  pwmSetup();  
+  _pwm.setup(); 
+  _leg = tdm::Leg::build('A'); 
 }
 
-// called continously at runtime
+/*
+ * called continously at runtime
+ */
 void loop() {            
-  if (++g_CurrentState>=NUM_STATES) { 
-    g_CurrentState = 0;    
+  if (_index>=NUM_STATES) { 
+    _index = 0;    
   }
-  legSet(LEG_A, states[g_CurrentState]);
+  _leg->setAngles(_states[_index++]);
   delay(2000);
 }

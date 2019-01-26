@@ -26,7 +26,7 @@ namespace tdm {
 
 
   /*
-  * some poluplar colors
+  * some popular colours
   */
   rgb_color_t _COLOR_RED =   {TDM_COLOR_ON,  TDM_COLOR_OFF, TDM_COLOR_OFF};
   rgb_color_t _COLOR_GREEN = {TDM_COLOR_OFF, TDM_COLOR_ON,  TDM_COLOR_OFF};
@@ -36,8 +36,9 @@ namespace tdm {
    * Describes a LED device  
    */
   class Led {
-    public:
-      PwmIO* _pwm;      
+    
+    private:
+      PwmIO _pwm;
       uint8_t _rChannel;  // red PWM channel in range of 0..31
       uint8_t _gChannel;  // green PWM channel in range of 0..31
       uint8_t _bChannel;  // blue PWM channel in range of 0..31
@@ -47,20 +48,19 @@ namespace tdm {
       /*
        * default led channels are 2,3 and 4, this may vary depending on your wiring
        */
-      Led(PwmIO* pwm) : Led(pwm, 2, 3, 4 ) {       
+      Led() : Led(2, 3, 4 ) {       
       }
       
-      Led(PwmIO* pwm, uint8_t rChannel, uint8_t gChannel, uint8_t bChannel) {
-        _pwm = pwm;
+      Led(uint8_t rChannel, uint8_t gChannel, uint8_t bChannel) {
         _rChannel = rChannel;
         _gChannel = gChannel;
         _bChannel = bChannel;        
       }
 
       void setColor(rgb_color_t color) {
-        _pwm->setPulse(_rChannel, color.rPulse);
-        _pwm->setPulse(_gChannel, color.gPulse);
-        _pwm->setPulse(_bChannel, color.bPulse);        
+        _pwm.setPulse(_rChannel, color.rPulse);
+        _pwm.setPulse(_gChannel, color.gPulse);
+        _pwm.setPulse(_bChannel, color.bPulse);        
       }  
   }; //class Led
     
