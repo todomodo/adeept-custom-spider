@@ -28,7 +28,7 @@ namespace tdm {
   Adeept_PWMPCA9685 *_CACHED_ADPWM0, *_CACHED_ADPWM1;
 
    /*
-   * An enhanced serial class that supports things like "printf"
+   * A wrapper around Adeept_PWMPCA9685 library object
    */
   class PwmIO {
   
