@@ -27,14 +27,15 @@ class string {
 /*
  * let's have a vector of these
  */
-tdm::vector<string> words;
+tdm::Vector<string> words;
 uint8_t index = 0;
+tdm::Serial _serial;
 
 /*
  * called once at startup
  */
 void setup() {  
-  tdm::Serial::setup();
+  _serial.setup();
   words.push_back(string("Alpha"));
   words.push_back(string("Bravo"));
   words.push_back(string("Delta"));
@@ -44,7 +45,7 @@ void setup() {
  * called constantly in a loop
  */
 void loop() {  
-  tdm::Serial::printf("%d: %s\n", index, words[index].value());
+  _serial.printf("%d: %s\n", index, words[index].value());
   if (++index>=words.size()) {
     index =0;
   };

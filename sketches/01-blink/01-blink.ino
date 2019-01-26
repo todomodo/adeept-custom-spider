@@ -1,22 +1,35 @@
 /*
   Blink the LED in R/G/B
  */
+#include "tdm_serial.h"
+#include "tdm_pwmio.h"
+#include "tdm_lights.h"
 
-#include <Adeept_PWMPCA9685.h>
-#include "custom_pwmio.h"
-#include "custom_lights.h"
+/*
+ * declare PWM and LED
+ */
+tdm::PwmIO _pwm;
+tdm::Led _led = tdm::Led(&_pwm); 
 
+/*
+ * prep some colors for the blink
+ */
 #define NUM_COLORS 3
-led_state_t g_Colors[NUM_COLORS] = {LED_COLOR_RED, LED_COLOR_GREEN, LED_COLOR_BLUE};
-int g_CurrentColorIndex=0;
+tdm::rgb_color_t _colors[NUM_COLORS] = {tdm::_COLOR_RED, tdm::_COLOR_GREEN, tdm::_COLOR_BLUE};
+int _index=0;
 
-
-void setup() {  
-  pwmSetup();
+/*
+ * called once at startup
+ */
+void setup() {
+  _pwm.setup();  
 }
 
+/*
+ * main loop
+ */
 void loop() {  
-  if (++g_CurrentColorIndex>=NUM_COLORS) g_CurrentColorIndex=0;
-  ledSet(LED_A,g_Colors[g_CurrentColorIndex]);
-   delay(1500);
+  if (++_index>=NUM_COLORS) _index=0;   
+  _led.setColor(_colors[_index]);
+   delay(1000);
 }
