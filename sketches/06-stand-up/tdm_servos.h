@@ -12,7 +12,7 @@
 #define TDM_SERVO_ANGLEMAX          180  //Physical servos rotate between 0 .. 180 degrees
 #define TDM_SERVO_PULSEMIN          130  //PWM pulse between 130 and 600
 #define TDM_SERVO_PULSEMAX          600  //PWM pulse between 130 and 600
-#define TDM_SERVO_MAXCOUNT          TDM_PWM_NUMBER_OF_CONTROLLERS * TDM_PWM_CHANNELS_PER_CONTROLLER
+#define TDM_SERVO_MAXCOUNT          (TDM_PWM_NUMBER_OF_CONTROLLERS * TDM_PWM_CHANNELS_PER_CONTROLLER)
 
 
 namespace tdm {
@@ -92,17 +92,45 @@ namespace tdm {
         Servo** _servos;
 
       public:
-        ServoGroup(int numargs, ...) {
-          _size = numargs;
-          _servos = new Servo*[_size];
+        ServoGroup(int size) {
+          _size = size;
+          _servos = new Servo*[_size];          
+        }
+                
+        ~ServoGroup() {
+          if (_servos!=NULL) {
+             delete [] (Servo*[]) _servos;
+             _servos= NULL;
+          }
+        }
+
+        /*
+         * Build servo group from parameters
+         */
+        ServoGroup* build(int numargs, ...) {
+          ServoGroup* sg = new ServoGroup(numargs);
           va_list args;
           va_start(args, _size);
           for(int i=0; i<_size; i++) {
-            _servos[i] = va_arg(args, Servo*);
+            sg->setServo(va_arg(args, Servo*), i);
           }
           va_end(args);          
         }
 
+      /* 
+       * set servo 
+       */
+       void setServo(Servo* servo, int index) {
+          _servos[index] = servo;
+       }
+
+       /* 
+       * get servo 
+       */
+       Servo* getServo(int index) {
+          return _servos[index];
+       }
+       
        /* 
        * set angles 
        */
@@ -126,6 +154,13 @@ namespace tdm {
         */
         void turnOffServo(int index) {
           _servos[index]->turnOff();
+        }
+
+        /* 
+        * get the group size
+        */
+        int size() {
+          return _size;
         }
 
     

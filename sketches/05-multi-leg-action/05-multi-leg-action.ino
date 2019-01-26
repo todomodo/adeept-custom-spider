@@ -12,14 +12,14 @@ tdm::PwmIO _pwm;
 tdm::LegGroup *_legs;
 
 /*
- * set leg states to cirle between
+ * set leg states to circle between
  */
 #define NUM_STATES 2
 const int _states[NUM_STATES][TDM_LEGS_PER_ROBOT][TDM_SERVOS_PER_LEG] = {
   { {45, 50, 110 }, {50, 50, 110 }, {50, 50, 110 }, {55, 50, 10 }, {50, 50, 10 }, {50, 50, 10 } },  // robot state 0
   { {30, 70, 80 }, {30, 70, 80 }, {30, 70, 80 }, {70, 30, 30 }, {70, 30, 30 }, {70, 30, 30 } }      // robot state 1
 };
-int _index = -1;
+int _index = 0;
 
 
 /* 
@@ -36,7 +36,7 @@ void setup() {
  * called continuously at runtime 
  */
 void loop() {           
-  if (++_index>=NUM_STATES) _index = 0;    
-  _legs->setAngles(_states[_index]); 
+  if (_index>=NUM_STATES) _index=0;    
+  _legs->setAngles(_states[_index++]); 
   delay(2000);     
 }

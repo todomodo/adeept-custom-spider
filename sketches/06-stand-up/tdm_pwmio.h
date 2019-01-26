@@ -13,7 +13,7 @@
  * most of these are for controlling servos and RGB lights
  */
 
-#define TDM_PWM_FREQUENCY          50  //TowerPro MG90S Servos run at 50 HZ
+#define TDM_PWM_FREQUENCY                50  //TowerPro MG90S Servos run at 50 HZ
 #define TDM_PWM_PIN_OFF                   0  // magic value turns off a pin 
 #define TDM_PWM_CHANNELS_PER_CONTROLLER  16  // we use 16 channel controllers
 #define TDM_PWM_NUMBER_OF_CONTROLLERS     2  // there's 2 of them

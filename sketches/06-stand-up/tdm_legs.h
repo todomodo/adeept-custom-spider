@@ -23,8 +23,11 @@ namespace tdm {
   class Leg : public ServoGroup{
         
     private:
-      Leg(Servo* s1, Servo* s2, Servo* s3) :
-        ServoGroup(3, s1, s2, s3) { };
+      Leg(Servo* s1, Servo* s2, Servo* s3) : ServoGroup(3) { 
+        setServo(s1, 0);
+        setServo(s2, 1);
+        setServo(s3, 2);
+      };
 
     public:
       static Leg* build(char legName) {
@@ -90,6 +93,20 @@ namespace tdm {
           va_end(args);          
         }
 
+        ~LegGroup() {
+          if (_legs!=NULL) {
+             delete [] (Leg*[]) _legs;
+             _legs= NULL;
+          }
+        }
+
+       /* 
+       * get leg 
+       */
+       Leg* getLeg(int index) {
+          return _legs[index];
+       }
+
        /* 
        * set angles 
        */
@@ -109,7 +126,7 @@ namespace tdm {
         }
 
         /*
-         * ruen off one servo per leg
+         * turn off one servo per leg
          */
          void turnOffServo(int index) {
           for(int i=0; i < _size; i++) {
@@ -117,7 +134,13 @@ namespace tdm {
           }
          }
 
+        /* 
+        * get the group size
+        */
+        int size() {
+          return _size;
+        } 
     
-   }; //class ServoGroup
+   }; //class LegGroup
   
 }; //namespace
