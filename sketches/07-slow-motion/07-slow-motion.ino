@@ -9,17 +9,15 @@
 #include "tdm_legs.h"
 #include "tdm_motion.h"
 
-/*
- * define PWM
- */
+
 tdm::PwmIO _pwm;
 tdm::Led _led;
-tdm::LegGroup *_legs;
 tdm::LegMover *_mover;
 
 /*
- * set leg states to circle between
+ * define legs and their possible states
  */
+tdm::LegGroup _legs = tdm::LegGroup(TDM_LEGS_PER_ROBOT, 'A', 'B', 'C', 'D', 'E', 'F');
 #define NUM_STATES 3
 const int _state[NUM_STATES][TDM_LEGS_PER_ROBOT][TDM_SERVOS_PER_LEG] = {
   { {45, 10,  10}, {50, 12,  10}, {50, 10,  10}, {55, 95, 110}, {50, 90, 110}, {50, 90, 110} },  // robot state 0
@@ -30,16 +28,15 @@ int _index = 0;
 
 /*
  * define the motion parameters, for example
- * 20 increments per motion, 60ms delay between increments
+ * 30 increments per motion, 20ms delay between increments, loop mode
  */
-tdm::motion_type_t _motion_type = { 20, 60 }; 
+tdm::motion_type_t _motion_type = { 30, 20, false }; 
 
 
 // executed once at startup
 void setup() {
-  _pwm.setup();   
-  _legs = new tdm::LegGroup(TDM_LEGS_PER_ROBOT, 'A', 'B', 'C', 'D', 'E', 'F');  
-  _mover = new tdm::LegMover(_legs,_motion_type);    
+  _pwm.onSetup();   
+  _mover = new tdm::LegMover(&_legs,_motion_type);
   _mover->jumpTo(_state[_index++]);
 }
 

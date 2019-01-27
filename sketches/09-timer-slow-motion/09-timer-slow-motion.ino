@@ -2,79 +2,115 @@
  * Arduino controlled slow motion. Slowness is achieved by programmatic delays 
  * in the code running as timer2 interrupt handler
  */
-#include <Adeept_PWMPCA9685.h>
-#include "custom_timers.h"
-#include "custom_pwmio.h"
-#include "custom_lights.h"
-#include "custom_servos.h"
-#include "custom_legs.h"
-#include "custom_motion.h"
+#include "tdm_serial.h"
+#include "tdm_vector.h"
+#include "tdm_pwmio.h"
+#include "tdm_lights.h"
+#include "tdm_servos.h"
+#include "tdm_legs.h"
+#include "tdm_motion.h"
+#include "tdm_timers.h"
+
 
 /*
- * define motion frame to be collection of leg states
+ * Define an interrupt handler class 
  */
-typedef struct {
-  leg_state_t legs[LEGS_PER_ROBOT];
-} motion_frame_t;
+class Handler : public tdm::Timer2 {
 
-/*
- * Declare several differnt motion frames
- */
-motion_frame_t g_Frame0 = {{
-  {45, 10, 10 }, {50, 12, 10 }, {50, 10, 10 },
-  {55, 95, 110 }, {50, 90, 110 }, {50, 90, 110 }
-}};
+  private:
 
-motion_frame_t g_Frame1 = {{
-  {45, 70, 40 }, {50, 70, 40 }, {50, 70, 40 },
-  {55, 30, 70 }, {50, 30, 75 }, {50, 30, 75 }
-}};
+      tdm::PwmIO _pwm;  
+      tdm::Led _led;      
+      tdm::LegMover *_mover;      
 
-motion_frame_t g_Frame2 = {{
-  {45, 50, 110 }, {50, 50, 110 }, {50, 50, 110 },
-  {55, 50, 10 }, {50, 50, 10 }, {50, 50, 10 }
-}};
+      /*
+       * define legs and their possible states
+       */
+      tdm::LegGroup _legs = tdm::LegGroup(TDM_LEGS_PER_ROBOT, 'A', 'B', 'C', 'D', 'E', 'F');
+      #define NUM_STATES 3
+      const int _state[NUM_STATES][TDM_LEGS_PER_ROBOT][TDM_SERVOS_PER_LEG] = {
+        { {45, 10,  10}, {50, 12,  10}, {50, 10,  10}, {55, 95, 110}, {50, 90, 110}, {50, 90, 110} },  // robot state 0
+        { {45, 70,  40}, {50, 70,  40}, {50, 70,  40}, {55, 30,  70}, {50, 30,  75}, {50, 30,  75} },  // robot state 1
+        { {45, 50, 110}, {50, 50, 110}, {50, 50, 110}, {55, 50,  10}, {50, 50,  10}, {50, 50,  10} }   // robot state 2
+      };
+      int _index = 0;
+        
+      /*
+       * define motion parameters, for example
+       * "30 increments per motion, 20ms delay between increments, timer mode"
+       */
+      tdm::motion_type_t _motion_type = { 30, 20 , true }; 
+                 
+      /* 
+       * if set, forces the interrupt handler to treat the next N cycles as idle. 
+       */
+      uint16_t _skip_count=0;
+      uint16_t _total_interrupts;
 
-/*
- *  one global array of motion frames
- */
-#define MAX_FRAMES 3
-motion_frame_t g_MotionFrames[MAX_FRAMES] = { g_Frame0, g_Frame1, g_Frame2 };
-int g_CurrentFrameIndex = 0;
+  public:
 
-/*
- * define motion parameters, for example
- *  "20 phases per motion, 0ms delay between phases, async mode"
- * when using async mode, the phase delays value is ignored and we need to take care
- * of it in the code. See the explanation for g_SkipCount below
- */
-motion_type_t g_MotionType = { 20, 0 , true }; 
+      /*
+      * the initializer
+      */
+      void onSetup(void) {
+        _pwm.onSetup();
+        _mover = new tdm::LegMover(&_legs,_motion_type);
+        _mover->jumpTo(_state[_index++]);
+        tdm::Timer2::onSetup();
+      }
 
+      /*
+      * the worker is called "getFrequency()" times per second
+      */
+      void doWork(void) {
+        _total_interrupts++;
+        if (_skip_count >0) {        
+           onSkip();
+        } else {
+           onWork();
+        }            
+      }
+
+    private:
+      
+      void onSkip() {
+        _skip_count--;
+      }
+
+
+      void onWork() {
+        sei();
+        if (_mover->doMotion()) {
+          /* 
+           * if there was motion, keep the light red and insert some skip counts
+           * as instructed by the motion_delay value. We need to do this manually since 
+           * in timer mode, the motion_delay value is ignored by the leg mover
+           */
+          _led.setColor(tdm::_COLOR_RED);          
+          int skip_increment = ceil(((float)_motion_type.motion_delay / (float)getInterval()));
+          _skip_count += skip_increment;
+        } else {
+          /*
+           * if there was no motion, advance to next position, turn the
+           * light green and mark the next 2 seconds as skip/idle
+           */
+          if (_index>=NUM_STATES) _index = 0;    
+          _mover->moveTo(_state[_index++]);                  
+          _led.setColor(tdm::_COLOR_GREEN);            
+           _skip_count = getFrequency() * 2;
+        }
+      }
+      
+};// classHandler
+
+
+Handler _handler;
 
 /* 
- * Tracks the total number of raised interrupts. 
- */
-uint16_t g_InterruptCount=0;
-
-/*
- * The LOAD prescaler controlls the ratio between busy and idle interrupts. For example 
- * a value of 3 indicates that every 3th interrupt is busy (does something) - the rest
- * are idle.
- */
-#define LOAD_PRESCALER 3
-
-/* 
- * if set, forces the interrupt handler to treat the next N cycles as idle. 
- */
-uint16_t g_SkipCount=0;
-
-
-
-// executed once at startup
+* executed once at startup  
+*/
 void setup() {
-  setupTimers();
-  pwmSetup();  
-  mgBeginMotion(ALL_LEGS, LEGS_PER_ROBOT, g_MotionFrames[g_CurrentFrameIndex++].legs);    
+   _handler.onSetup();  
 }
 
 /*
@@ -84,59 +120,4 @@ void loop() {
   /* 
    * do nothing  
    */
-}
-
-/*
- * called TIMER2_COMPA_FREQUENCY times per second
- */
-ISR (TIMER2_COMPA_vect)
-{
-  /*
-   * start by incrementing the main interrupt counter 
-   */
-   g_InterruptCount++;
-
-   /*
-    * check to see if this is a skip cycle
-    */
-  if (g_SkipCount >0) {
-    /*
-     * this is a skip cycle, all we do is decrement the skip counter
-     */
-     g_SkipCount--;
-  } else {
-    /*
-     * this is not a skip cycle. Check if it's busy or idle
-     */
-    uint16_t reminder = g_InterruptCount++ % LOAD_PRESCALER;    
-    if (reminder == 0)
-    {               
-      /*
-       * this is a busy cycle - do some work
-       */
-      if (mgDoMotion()) {
-        /*
-         * if there was motion, keep the light red
-         */
-        ledSet(LED_A,LED_COLOR_RED);
-      } else {
-        /*
-         * There was no motion, advance to next position
-         */
-        if (++g_CurrentFrameIndex>=MAX_FRAMES) g_CurrentFrameIndex = 0;    
-        mgMoveTo(g_MotionType, g_MotionFrames[g_CurrentFrameIndex].legs, LEGS_PER_ROBOT);
-  
-        /*
-         * Turn the light green
-         */
-        sei();
-        ledSet(LED_A,LED_COLOR_GREEN);
-
-        /*
-         * Mark the next 2 seconds as idle 
-         */
-         g_SkipCount = TIMER2_COMPA_FREQUENCY * 2;
-      }
-    }
-  }
 }

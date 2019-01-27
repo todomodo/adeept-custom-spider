@@ -29,7 +29,7 @@ int _index = 0;
  * executed once at startup 
  */
 void setup() {
-  _pwm.setup(); 
+  _pwm.onSetup(); 
   _legs = new tdm::LegGroup(TDM_LEGS_PER_ROBOT, 'A','B','C','D','E','F');
 }
 

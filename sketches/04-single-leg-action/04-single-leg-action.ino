@@ -28,7 +28,7 @@ int _index = 0;
  * executed once at startup
  */
 void setup() {
-  _pwm.setup(); 
+  _pwm.onSetup(); 
   _leg = new tdm::Leg('A'); 
 }
 

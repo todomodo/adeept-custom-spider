@@ -44,8 +44,16 @@ namespace tdm {
         char buf[TDM_SERIAL_MAX_PRINTF];
         va_list args;
         va_start (args, fmt );
-        vsnprintf(buf, 128, fmt, args);
+        vsnprintf(buf, TDM_SERIAL_MAX_PRINTF, fmt, args);
         va_end (args);
+        ::Serial.print(buf);
+      };
+
+      /*
+       * Based on ideas from https://playground.arduino.cc/main/printf
+       */
+      void print(char *buf) {
+        onSetup();        
         ::Serial.print(buf);
       };
 

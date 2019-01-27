@@ -35,7 +35,7 @@ tdm::Serial _serial;
  * called once at startup
  */
 void setup() {  
-  _serial.setup();
+  _serial.onSetup();
   words.push_back(string("Alpha"));
   words.push_back(string("Bravo"));
   words.push_back(string("Delta"));

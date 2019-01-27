@@ -37,7 +37,7 @@ namespace tdm {
       /*
        * initialize for first use
        */
-      void setup(void) {
+      void onSetup(void) {
         if (_CACHED_ADPWM0==NULL) {
           _CACHED_ADPWM0 = new Adeept_PWMPCA9685(0x40);
           _CACHED_ADPWM0->begin();

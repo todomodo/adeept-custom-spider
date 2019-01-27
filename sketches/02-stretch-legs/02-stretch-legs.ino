@@ -15,7 +15,7 @@ tdm::PwmIO _pwm;
  * executed once at startup 
  */
 void setup() {
-  _pwm.setup();  
+  _pwm.onSetup();  
   
   int stretch_a[] = {45, 50, 100 };
   tdm::Leg('A').setAngles(stretch_a);  
