@@ -2,6 +2,7 @@
  * Arduino controlled slow motion. Slowness is achieved by programmatic delays 
  * in the man loop
  */
+#include "tdm_vector.h"
 #include "tdm_pwmio.h"
 #include "tdm_lights.h"
 #include "tdm_servos.h"
@@ -36,15 +37,10 @@ tdm::motion_type_t _motion_type = { 20, 60 };
 
 // executed once at startup
 void setup() {
-  _pwm.setup(); 
-  
-  _legs = new tdm::LegGroup(TDM_LEGS_PER_ROBOT, 
-    tdm::Leg::build('A'),tdm::Leg::build('B'),tdm::Leg::build('C'),
-    tdm::Leg::build('D'),tdm::Leg::build('E'),tdm::Leg::build('F'));
-  
+  _pwm.setup();   
+  _legs = new tdm::LegGroup(TDM_LEGS_PER_ROBOT, 'A', 'B', 'C', 'D', 'E', 'F');  
   _mover = new tdm::LegMover(_legs,_motion_type);    
   _mover->jumpTo(_state[_index++]);
-  _mover->moveTo(_state[_index]);
 }
 
 // called continuously at runtime

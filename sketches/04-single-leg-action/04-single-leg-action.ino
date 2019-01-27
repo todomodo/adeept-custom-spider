@@ -1,6 +1,7 @@
 /*
  * A simple one leg motion pattern
  */
+#include "tdm_vector.h"
 #include "tdm_pwmio.h"
 #include "tdm_servos.h"
 #include "tdm_legs.h"
@@ -28,7 +29,7 @@ int _index = 0;
  */
 void setup() {
   _pwm.setup(); 
-  _leg = tdm::Leg::build('A'); 
+  _leg = new tdm::Leg('A'); 
 }
 
 /*

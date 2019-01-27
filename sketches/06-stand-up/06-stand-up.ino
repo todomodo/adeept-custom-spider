@@ -1,6 +1,7 @@
 /*
  * stand up on all 6 legs
  */
+#include "tdm_vector.h"
 #include "tdm_pwmio.h"
 #include "tdm_servos.h"
 #include "tdm_legs.h"
@@ -29,9 +30,7 @@ int _index = 0;
  */
 void setup() {
   _pwm.setup(); 
-  _legs = new tdm::LegGroup(TDM_LEGS_PER_ROBOT, 
-    tdm::Leg::build('A'),tdm::Leg::build('B'),tdm::Leg::build('C'),
-    tdm::Leg::build('D'),tdm::Leg::build('E'),tdm::Leg::build('F'));
+  _legs = new tdm::LegGroup(TDM_LEGS_PER_ROBOT, 'A','B','C','D','E','F');
 }
 
 /* 
@@ -46,7 +45,7 @@ void loop() {
     /*
      * turn off non-essential servos to save power
      */
-    _legs->turnOffServo(0);
+    _legs->turnOffAtIndex(0);
     _index++;
   }    
 }

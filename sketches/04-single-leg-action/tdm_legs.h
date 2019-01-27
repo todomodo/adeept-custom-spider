@@ -11,108 +11,82 @@
 
 namespace tdm {
 
-  /*
-   * because of restrictions about accessing static class members form .H files, we declare these 
-   * as a global
-   */
-  void *_LEG_A, *_LEG_B, *_LEG_C, *_LEG_D, *_LEG_E, *_LEG_F;
-
+  
   /* 
    * Describes a Leg of 3 servos  
    */
-  class Leg : public ServoGroup{
+  class Leg : public ServoGroup {
         
     private:
-      Leg(Servo* s1, Servo* s2, Servo* s3) : ServoGroup(3) { 
-        setServo(s1, 0);
-        setServo(s2, 1);
-        setServo(s3, 2);
+      Leg(uint8_t ch1, uint8_t ch2, uint8_t ch3) 
+        : ServoGroup(TDM_SERVOS_PER_LEG, ch1, ch2, ch3) { 
       };
 
     public:
-      static Leg* build(char legName) {
+      Leg(char legName) {
+        
         switch (legName) {
+          
           case 'A': 
-            if (_LEG_A==NULL) {
-              _LEG_A = new Leg(Servo::build(31), Servo::build(30), Servo::build(29));
-            };
-            return (Leg*) _LEG_A;
-           
-          case 'B': 
-            if (_LEG_B==NULL) {
-              _LEG_B = new Leg(Servo::build(27), Servo::build(26), Servo::build(25));
-            };
-            return (Leg*) _LEG_B;
+            addChannel(31); addChannel(30); addChannel(29);
+            break;
+          
+          case 'B':
+            addChannel(27); addChannel(26); addChannel(25);           
+            break;             
             
           case 'C': 
-            if (_LEG_C==NULL) {
-              _LEG_C = new Leg(Servo::build(23), Servo::build(22), Servo::build(21));
-            };
-            return (Leg*) _LEG_C;            
+            addChannel(23); addChannel(22); addChannel(21);           
+            break;             
           
           case 'D': 
-            if (_LEG_D==NULL) {
-              _LEG_D = new Leg(Servo::build(13), Servo::build(14), Servo::build(15));
-            };
-            return (Leg*) _LEG_D;
+            addChannel(13); addChannel(14); addChannel(15);      
+            break;                  
                       
           case 'E':
-            if (_LEG_E==NULL) {
-              _LEG_E = new Leg(Servo::build(9), Servo::build(10), Servo::build(11));
-            };
-            return (Leg*) _LEG_E;
+            addChannel(9); addChannel(10); addChannel(11);      
+            break;                  
           
           case 'F': 
-            if (_LEG_F==NULL) {
-              _LEG_F = new Leg(Servo::build(5), Servo::build(6), Servo::build(7));
-            };
-            return (Leg*) _LEG_F;            
+            addChannel(5); addChannel(6); addChannel(7);      
+            break;
         }
      }
                  
   }; // class Leg
 
   /*
-   * A class for controling multiple legs
+   * A class for controling multiple legs. Example: (3,'A','B','C') describes a group
+   * of 3 legs: 'A', 'B' and 'C"
    */
    class LegGroup {
 
       private:
-        uint8_t _size; 
-        Leg** _legs;
+        Vector<Leg*> _items; 
 
       public:
         LegGroup(int numargs, ...) {
-          _size = numargs;
-          _legs = new Leg*[_size];
           va_list args;
-          va_start(args, _size);
-          for(int i=0; i<_size; i++) {
-            _legs[i] = va_arg(args, Leg*);
+          va_start(args, numargs);
+          for(int i=0; i<numargs; i++) {
+            _items.push_back(new Leg(va_arg(args, char)));
           }
           va_end(args);          
         }
 
-        ~LegGroup() {
-          if (_legs!=NULL) {
-             delete [] (Leg*[]) _legs;
-             _legs= NULL;
-          }
-        }
-
        /* 
-       * get leg 
+       * get leg at index
        */
-       Leg* getLeg(int index) {
-          return _legs[index];
+       Leg* getLegAtIndex(int index) {
+          return _items[index];
        }
 
        /* 
        * set angles 
        */
         void setAngles(int degrees[][TDM_SERVOS_PER_LEG]){
-          for(int i=0; i < _size; i++) {
-            _legs[i]->setAngles(degrees[i]);
+          for(int i=0; i < size(); i++) {
+            _items[i]->setAngles(degrees[i]);
           }
         }
 
@@ -120,17 +94,18 @@ namespace tdm {
         * turn off all legs
         */
         void turnOffAllLegs(void) {
-          for(int i=0; i < _size; i++) {
-            _legs[i]->turnOffAllServos();
+          for(int i=0; i < size(); i++) {
+            _items[i]->turnOffAllServos();
           }
         }
 
         /*
-         * turn off one servo per leg
+         * turn off all servos at certain index. For example "turnOffAtIndex(0)" turns off
+         * all 0-index servos in the group
          */
-         void turnOffServo(int index) {
-          for(int i=0; i < _size; i++) {
-            _legs[i]->turnOffServo(index);
+         void turnOffAtIndex(int index) {
+          for(int i=0; i < size(); i++) {
+            _items[i]->turnOffAtIndex(index);
           }
          }
 
@@ -138,8 +113,8 @@ namespace tdm {
         * get the group size
         */
         int size() {
-          return _size;
-        } 
+          return _items.size();
+        }
     
    }; //class LegGroup
   

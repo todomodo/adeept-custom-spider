@@ -65,6 +65,13 @@ namespace tdm {
       void turnOff(void) {
         _pwm.setPulse(_channel, TDM_PWM_PIN_OFF);
       }
+
+      /*
+       * Get the servo channel
+       */
+       uint8_t getChannel() {
+        return _channel;
+       }
       
 
       private:
@@ -88,55 +95,45 @@ namespace tdm {
    class ServoGroup {
 
       private:
-        uint8_t _size; 
-        Servo** _servos;
+        Vector<Servo*> _items; 
 
       public:
-        ServoGroup(int size) {
-          _size = size;
-          _servos = new Servo*[_size];          
-        }
-                
-        ~ServoGroup() {
-          if (_servos!=NULL) {
-             delete [] (Servo*[]) _servos;
-             _servos= NULL;
-          }
-        }
-
+        ServoGroup() {
+        };
+        
         /*
-         * Build servo group from parameters
+         * Construct a servo group from parameters. Example: (3,0,9,12) describes a group
+         * of 3 servos, taking channels 0, 9 and 12
          */
-        ServoGroup* build(int numargs, ...) {
-          ServoGroup* sg = new ServoGroup(numargs);
+        ServoGroup(int numargs, ...) {
           va_list args;
-          va_start(args, _size);
-          for(int i=0; i<_size; i++) {
-            sg->setServo(va_arg(args, Servo*), i);
+          va_start(args, numargs);
+          for(int i=0; i<numargs; i++) {
+            addChannel(va_arg(args, uint8_t));
           }
-          va_end(args);          
+          va_end(args); 
         }
 
       /* 
-       * set servo 
+       * add servo channel to group
        */
-       void setServo(Servo* servo, int index) {
-          _servos[index] = servo;
+       void addChannel(uint8_t channel) {
+          _items.push_back(Servo::build(channel));
        }
 
-       /* 
-       * get servo 
-       */
-       Servo* getServo(int index) {
-          return _servos[index];
+       /*
+        * get servo channel at index
+        */
+       uint8_t getChannelAtIndex(int index) {
+        return _items[index]->getChannel();
        }
-       
+
        /* 
        * set angles 
        */
         void setAngles(int degrees[]){
-          for(int i=0; i < _size; i++) {
-            _servos[i]->setAngle(degrees[i]);
+          for(int i=0; i < _items.size(); i++) {
+            _items[i]->setAngle(degrees[i]);
           }
         }
 
@@ -144,23 +141,23 @@ namespace tdm {
         * turn off all servos
         */
         void turnOffAllServos(void) {
-          for(int i=0; i < _size; i++) {
-            _servos[i]->turnOff();
+          for(int i=0; i < _items.size(); i++) {
+            _items[i]->turnOff();
           }
         }
 
         /* 
-        * turn off by index
+        * turn off one servo at index
         */
-        void turnOffServo(int index) {
-          _servos[index]->turnOff();
+        void turnOffAtIndex(int index) {
+          _items[index]->turnOff();
         }
 
         /* 
         * get the group size
         */
         int size() {
-          return _size;
+          return _items.size();
         }
 
     

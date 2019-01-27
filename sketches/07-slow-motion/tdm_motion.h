@@ -22,36 +22,40 @@ namespace tdm {
   class ServoMover {
 
     private:
-      ServoGroup* _servos;	                      //participating servos
+      ServoGroup* _pSG;	                          //participating servos
       int _current_frame[TDM_SERVO_MAXCOUNT];			//current frame
       int _target_frame[TDM_SERVO_MAXCOUNT];			//target frame
       int _increment[TDM_SERVO_MAXCOUNT];	        //increments
-      motion_type_t _motion_type;					        //the type of motion 
+      motion_type_t _motion_type;					        //motion type 
       
 
 
     public:
 
-      ServoMover(ServoGroup* servos, motion_type_t motion_type) {
-        _servos = servos;
+      ServoMover(ServoGroup* pSG, motion_type_t motion_type) {
+        _pSG = pSG;
         _motion_type = motion_type;        
       }
 
      /*
-     * begin motion for a collection of servos. Initial servo positions are set immediately
+     * initialize current and target frame and position there immediately
+     * this gives us a know posiiton from were we can start moving
      */
       void jumpTo(int angles[]) {
-        for(int i=0; i<_servos->size(); i++) {
+        for(int i=0; i<_pSG->size(); i++) {
           _current_frame[i] = angles[i];
+          _target_frame[i] = angles[i];
+          _increment[i] = 0;
         }
-        _servos->setAngles(_current_frame);
+        _pSG->setAngles(_current_frame);
       }
 
       /*
-       * Set new motion target. The group must have been initialized with "jumpTo"
+       * Set new motion target. The group must be in a known position, eg
+       * "jumpTo" should have been called at least once
        */
       void moveTo(int angles[]) {
-        for(int i=0; i<_servos->size(); i++) {
+        for(int i=0; i<_pSG->size(); i++) {
           _target_frame[i] =  angles[i];
           _increment[i] = (_target_frame[i]-_current_frame[i]) / _motion_type.motion_steps;    
         } 
@@ -63,7 +67,7 @@ namespace tdm {
      */
     bool doMotion(void) {
         bool in_progress = false;
-        for(int i=0; i<_servos->size(); i++) {
+        for(int i=0; i<_pSG->size(); i++) {
           if  ( (_current_frame[i] != _target_frame[i]) && (_increment[i] !=0) ) {
                     
             // apply the increment        
@@ -80,7 +84,7 @@ namespace tdm {
         }
     
         if (in_progress) {
-          _servos->setAngles(_current_frame);
+          _pSG->setAngles(_current_frame);
           delay(_motion_type.motion_delay);
         }
            
@@ -133,15 +137,15 @@ namespace tdm {
        * Convert to ServoGroup
        */
        private:
-       static ServoGroup* toServoGroup(LegGroup* legs) {        
-          ServoGroup* sg = new ServoGroup(legs->size() * TDM_SERVOS_PER_LEG);
-          int index = 0;
-          for(int leg=0; leg < legs->size(); leg++) {
-            for(int servo=0; servo < TDM_SERVOS_PER_LEG; servo++) {
-              sg->setServo(legs->getLeg(leg)->getServo(servo),index++);
+       static ServoGroup* toServoGroup(LegGroup* pLG) {        
+          ServoGroup* pSG = new ServoGroup();
+          for(int legIndex=0; legIndex < pLG->size(); legIndex++) {
+            Leg* pLeg = pLG->getLegAtIndex(legIndex);
+            for(int servoIndex=0; servoIndex < pLeg->size(); servoIndex++) {
+              pSG->addChannel(pLeg->getChannelAtIndex(servoIndex));
             }
           }
-          return sg;
+          return pSG;
        }
   
   }; // class LegMover

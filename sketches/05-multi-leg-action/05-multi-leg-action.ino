@@ -1,6 +1,8 @@
 /*
  * move all 6 legs in a simple way by drectly setting the servos
  */
+//#include "tdm_serial.h"
+#include "tdm_vector.h"
 #include "tdm_pwmio.h"
 #include "tdm_servos.h"
 #include "tdm_legs.h"
@@ -25,18 +27,16 @@ int _index = 0;
 /* 
  * executed once at startup 
  */
-void setup() {
-  _pwm.setup(); 
-  _legs = new tdm::LegGroup(TDM_LEGS_PER_ROBOT, 
-    tdm::Leg::build('A'),tdm::Leg::build('B'),tdm::Leg::build('C'),
-    tdm::Leg::build('D'),tdm::Leg::build('E'),tdm::Leg::build('F'));
+void setup() { 
+  _pwm.setup();  
+  _legs = new tdm::LegGroup(TDM_LEGS_PER_ROBOT, 'A','B','C','D','E','F');
 }
 
 /* 
  * called continuously at runtime 
  */
-void loop() {           
+void loop() {    
   if (_index>=NUM_STATES) _index=0;    
   _legs->setAngles(_states[_index++]); 
-  delay(2000);     
+  delay(2000);
 }
